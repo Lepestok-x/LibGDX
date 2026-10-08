@@ -10,8 +10,8 @@ uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 void main() {
     vec4 color = texture2D(u_texture, v_texCoords);
-    vec2 mouse = u_mouse.xy / u_resolution;
-    vec2 uv = gl_FragCoord.xy / u_resolution;
+    vec2 mouse = u_mouse.xy / u_resolution; // 1.0 after to before 0.0
+    vec2 uv = gl_FragCoord.xy / u_resolution; // 1.0 after to before 0.0
 
     float distanceMouse = distance(uv, mouse);
     float gamma = pow(1.0 - distanceMouse, 5.0);
