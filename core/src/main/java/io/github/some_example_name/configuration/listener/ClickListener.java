@@ -12,7 +12,7 @@ public class ClickListener {
     private final SettingCamera camera;
     private final Vector3 normal;
     private static final float normalSpeed = 1.f;
-    private static final float speed = 150.f;
+    private static final float speed = 50.f;
     public ClickListener(Box box, SettingCamera camera) {
         this.box = box;
         this.camera = camera;

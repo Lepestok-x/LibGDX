@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector3;
 import io.github.some_example_name.configuration.SettingEnvironment;
 import io.github.some_example_name.configuration.directional.Directional;
 import io.github.some_example_name.configuration.directional.SettingsColor;
@@ -19,8 +20,8 @@ public class Main extends ApplicationAdapter {
     private ModelBatch batch;
     private InitEngine engine;
     private SettingEnvironment settingEnvironment;
-    private final float[] rgba = {1.f, 1.f, 1.f, 1.f};
-    private final float[] position = {-1.f, -.5f, -1.f};
+    private final Color color = new Color(.3f, .3f, .3f, 1.f);
+    private final Vector3 positionColor = new Vector3(-0.8f, -1.0f, -.4f).nor();
     private SpriteBatch spriteBatch;
     private BitmapFont font;
     @Override
@@ -31,8 +32,8 @@ public class Main extends ApplicationAdapter {
         batch = new ModelBatch();
         ModelBuilder builder = new ModelBuilder();
         Environment environment = new Environment();
-        SettingsColor settingsColor = new SettingsColor(ColorAttribute.AmbientLight, rgba);
-        Directional directional = new Directional(rgba, position);
+        SettingsColor settingsColor = new SettingsColor(ColorAttribute.AmbientLight, .8f, .8f, .8f, 1.f);
+        Directional directional = new Directional(color, positionColor);
         settingEnvironment = new SettingEnvironment(environment);
         settingEnvironment.startLightingEnvironment(settingsColor, directional);
         engine = new InitEngine(builder);

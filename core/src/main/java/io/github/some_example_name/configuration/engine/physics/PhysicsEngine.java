@@ -21,17 +21,16 @@ public class PhysicsEngine {
         // Создаем гравитацию
         final float time = Gdx.graphics.getDeltaTime();
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) velocityGravitate = -gravitate;
-        if(Gdx.input.isKeyPressed(Input.Keys.Q)) velocityGravitate = gravitate;
+        if(Gdx.input.isKeyPressed(Input.Keys.Q)) velocityGravitate = gravitate * 2.f;
         if(Gdx.input.isKeyPressed(Input.Keys.E)) velocityGravitate = -gravitate;
 
         velocityGravitate += gravitate * time;
         box.gravitate(velocityGravitate, time);
-        if(collision.collision(box, ground)) {
+        boolean isIntersection = collision.collision(box, ground);
+        ground.setColor((isIntersection) ? Color.GRAY : Color.WHITE);
+        if(isIntersection) {
             box.rollback();
             velocityGravitate = 0.f;
-            ground.setColor(Color.GRAY);
-        } else {
-            ground.setColor(Color.WHITE);
         }
     }
 }
