@@ -3,7 +3,7 @@ package io.github.some_example_name.configuration.listener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector3;
-import io.github.some_example_name.configuration.Box;
+import io.github.some_example_name.configuration.boxs.Box;
 import io.github.some_example_name.configuration.SettingCamera;
 import io.github.some_example_name.configuration.Vec;
 
@@ -11,7 +11,7 @@ public class ClickListener {
     private final Box box;
     private final SettingCamera camera;
     private final Vector3 normal;
-    private static final float normalSpeed = 1.f;
+    private float normalSpeed = 1.f;
     private static final float speed = 50.f;
     public ClickListener(Box box, SettingCamera camera) {
         this.box = box;
@@ -19,7 +19,6 @@ public class ClickListener {
         normal = new Vector3(.0f, 0.f, .0f);
     }
     public void updateListener() {
-        camera.positionToTarget(box.getPosition());
         final float time = Gdx.graphics.getDeltaTime();
         normal.set(.0f, 0.f, .0f);
         if(Gdx.input.isKeyPressed(Input.Keys.W)) normal.z -= normalSpeed;
@@ -31,5 +30,6 @@ public class ClickListener {
         if(normal.z != 0 || normal.x != 0) {
             box.normalPosition(normal, speed, time);
         }
+        camera.positionToTarget(box.getPosition());
     }
 }

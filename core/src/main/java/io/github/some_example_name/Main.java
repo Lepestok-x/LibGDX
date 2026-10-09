@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -9,13 +10,11 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import io.github.some_example_name.configuration.SettingEnvironment;
+import io.github.some_example_name.configuration.*;
 import io.github.some_example_name.configuration.directional.Directional;
 import io.github.some_example_name.configuration.directional.SettingsColor;
 import io.github.some_example_name.configuration.engine.InitEngine;
-/**
- * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
- */
+
 public class Main extends ApplicationAdapter {
     private ModelBatch batch;
     private InitEngine engine;
