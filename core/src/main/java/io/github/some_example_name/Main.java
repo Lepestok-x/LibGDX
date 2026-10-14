@@ -1,67 +1,97 @@
 package io.github.some_example_name;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.model.NodePart;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Vector3;
-import io.github.some_example_name.configuration.*;
-import io.github.some_example_name.configuration.directional.Directional;
-import io.github.some_example_name.configuration.directional.SettingsColor;
-import io.github.some_example_name.configuration.engine.InitEngine;
+import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import io.github.some_example_name.shader_configure.SettingsShader;
+
+import java.math.BigDecimal;
 
 public class Main extends ApplicationAdapter {
+    private static final int screenWidth = 1000, screedHeight = 650;
+    private PerspectiveCamera camera;
+    private Material material;
+    private Model model;
     private ModelBatch batch;
-    private InitEngine engine;
-    private SettingEnvironment settingEnvironment;
-    private final Color color = new Color(.3f, .3f, .3f, 1.f);
-    private final Vector3 positionColor = new Vector3(-0.8f, -1.0f, -.4f).nor();
-    private SpriteBatch spriteBatch;
+    private ModelBuilder cube;
+    private Shader shader;
+    private Renderable renderable;
+    private RenderContext renderContext;
     private BitmapFont font;
+    private SpriteBatch batchFont;
     @Override
     public void create() {
+        batchFont = new SpriteBatch();
         font = new BitmapFont();
         font.setColor(Color.GREEN);
-        spriteBatch = new SpriteBatch();
+
+        camera = new PerspectiveCamera(67.f, screenWidth, screedHeight);
+        camera.position.set(.0f, 5.f, 5.f);
+        camera.lookAt(.0f, .0f, .0f);
+        camera.up.set(.0f, 1.f, 0.f);
+        camera.near = 1.f;
+        camera.far = 300.f;
+
         batch = new ModelBatch();
-        ModelBuilder builder = new ModelBuilder();
-        Environment environment = new Environment();
-        SettingsColor settingsColor = new SettingsColor(ColorAttribute.AmbientLight, .8f, .8f, .8f, 1.f);
-        Directional directional = new Directional(color, positionColor);
-        settingEnvironment = new SettingEnvironment(environment);
-        settingEnvironment.startLightingEnvironment(settingsColor, directional);
-        engine = new InitEngine(builder);
-        engine.endUpdate();
+        cube = new ModelBuilder();
+        material = new Material();
+        long attribute = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal |
+            VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.ColorPacked;
+        material.set(ColorAttribute.createDiffuse(Color.RED));
+        model = cube.createBox(2.f, 2.f, 2.f, material, attribute);
+
+        NodePart blockPart = model.nodes.first().parts.first();
+        renderable = new Renderable();
+        blockPart.setRenderable(renderable);
+        renderable.environment = null;
+        renderable.worldTransform.idt();
+        renderContext = new RenderContext(new DefaultTextureBinder(DefaultTextureBinder.MAX_GLES_UNITS, 1));
+        shader = new SettingsShader();
+        shader.init();
+
+
     }
 
     @Override
     public void render() {
-        engine.endUpdate();
-        Gdx.gl.glClearColor(.0f, 0.f, .0f, 1.f);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.gl.glClearColor(.0f, .0f, .0f, 1.f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        batch.begin(engine.respectiveCamera());
-        engine.drawUpdate(batch, settingEnvironment.getEnvironment());
-        batch.end();
+        camera.update();
+        renderContext.begin();
+        shader.begin(camera, renderContext);
+        shader.render(renderable);
+        shader.end();
+        renderContext.end();
+        batchFont.begin();
+        float screenHeight = Gdx.graphics.getHeight() - 10.f;
+        font.draw(batchFont, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, screenHeight);
+        batchFont.end();
 
-        spriteBatch.begin();
-        font.draw(spriteBatch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 10, Gdx.graphics.getHeight() - 10);
-        spriteBatch.end();
     }
-
     @Override
     public void resize(int width, int height) {
-        engine.window(width, height);
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+        camera.update();
     }
 
     @Override
     public void dispose() {
-       engine.dispose();
-       if(spriteBatch != null) spriteBatch.dispose();
-       if(font != null) font.dispose();;
+      if(model != null) model.dispose();
+      if(batch != null) batch.dispose();
+      if(shader != null) shader.dispose();
     }
 }
