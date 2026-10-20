@@ -9,6 +9,8 @@ uniform float u_time;
 void main() {
     v_color = a_color;
     vec3 position = a_position;
-    position.y += ((sin(u_time + 3.0 + position.y * 1.05) * 0.5) + 0.5);
+    float jelly = position.y + 1.0;
+    float pulse = ((sin(u_time) * 0.5) + 0.5);
+    position.y += pulse * jelly;
     gl_Position = u_projViewTrans * u_projViewWorldTrans * vec4(position, 1.0);
 }
