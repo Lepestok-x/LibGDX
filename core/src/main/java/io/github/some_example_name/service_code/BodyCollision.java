@@ -14,9 +14,10 @@ public class BodyCollision {
         v2 = new BoundingBox();
     }
 
-    public void initCenterEntity(Vector3 position, Vector3 size) {
+    public void initCenterEntity(Vector3 size, Vector3 size2 ) {
         float divide = 2.f;
-        body = new BoundingBox(new Vector3(-position.x / divide, -position.y / divide, -position.z / divide), new Vector3(size.x / divide, size.y / divide, size.z / divide));
+        body = new BoundingBox(new Vector3(-size.x / divide, -size.y / divide, -size.z / divide), new Vector3(size.x / divide, size.y / divide, size.z / divide));
+        body2 = new BoundingBox(new Vector3(-size2.x / divide, -size2.y / divide, -size2.z / divide), new Vector3(size2.x / divide, size2.y / divide, size2.z / divide));
     }
     public boolean collision(Matrix4 t_m1, Matrix4 t_m2) {
         v1.set(body).mul(t_m1);

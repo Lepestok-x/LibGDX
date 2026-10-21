@@ -11,11 +11,18 @@ public class Player extends Entity {
     private final float intensity = .403f;
     private float angleX = .0f;
     private float angleY = 45.f;
+    private float oldY;
     public Player(Vector3 position, Vector3 size, ModelBuilder builder) {
         super(position, size, Color.RED, builder);
     }
     public void drawPlayer(ModelBatch batch) {
         drawEntity(batch);
+    }
+    public void saveCurrentPosition() {
+        this.oldY = this.getPosition().y;
+    }
+    public void gravitateY(float gravitate, float deltaTime) {
+        this.getPosition().y += gravitate * deltaTime;
     }
     public void cameraToPlayer(Camera camera, float distance) {
         Vector3 playerPos = this.getPosition();
@@ -33,6 +40,9 @@ public class Player extends Entity {
         camera.lookAt(playerPos);
         matrix4().trn(playerPos);
 
+    }
+    public void rollbackY() {
+        this.getPosition().y = oldY;
     }
     public void disposePlayer() {
         dispose();

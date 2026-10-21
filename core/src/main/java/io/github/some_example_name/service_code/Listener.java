@@ -9,6 +9,8 @@ public class Listener {
     private final Vector3 forward = new Vector3();
     private final Vector3 right = new Vector3();
     private final float velocity = 50.f;
+    private float velocityY;
+    private float gravitate = -40.9f;
     private float speed;
     private final Player player;
     public Listener(Player player) {
@@ -27,8 +29,15 @@ public class Listener {
         if(Gdx.input.isKeyPressed(Input.Keys.S)) playerPos.sub(forward.x * speed, .0f, forward.z * speed);
         if(Gdx.input.isKeyPressed(Input.Keys.A)) playerPos.sub(right.x * speed, .0f, right.z * speed);
         if(Gdx.input.isKeyPressed(Input.Keys.D)) playerPos.add(right.x * speed, .0f, right.z * speed);
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) velocityY = -gravitate;
         if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) Gdx.app.exit();
-        player.setPosition(playerPos);
+        velocityY += gravitate * time;
+        player.saveCurrentPosition();
+        player.gravitateY(velocityY, time);
         player.cameraToPlayer(camera, distance);
+    }
+    public void rollbackVelocityY() {
+        player.rollbackY();
+        velocityY = .0f;
     }
 }
