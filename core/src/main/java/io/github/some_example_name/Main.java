@@ -1,35 +1,56 @@
 package io.github.some_example_name;
+import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.utils.Array;
-import io.github.some_example_name.service_code.Init;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import io.github.some_example_name.components.ColorComponent;
+import io.github.some_example_name.components.FrameComponent;
+import io.github.some_example_name.components.PositionComponent;
+import io.github.some_example_name.components.VelocityComponent;
+import io.github.some_example_name.systems.PlayerInputSystem;
+import io.github.some_example_name.systems.RenderSystem;
+import io.github.some_example_name.systems.RobotSystem;
+import io.github.some_example_name.tags.PlayerTag;
+import io.github.some_example_name.tags.RobotTag;
 
 public class Main extends ApplicationAdapter {
-    private static final int screenWidth = 1000, screedHeight = 650;
-    private PerspectiveCamera camera;
-    private ModelBatch modelBatch;
-    private  Array<ModelBuilder> builders;
-    private Init init;
-    private final float distance = 25.f;
+    private static final int screenWidth = 1000, screenHeight = 650;
+    private OrthographicCamera camera;
+    private ShapeRenderer renderer;
+    private Viewport viewport;
+    private Engine engine;
     @Override
     public void create() {
-        camera = new PerspectiveCamera(67, screenWidth, screedHeight);
-        camera.position.set(.0f, distance, distance);
-        camera.lookAt(.0f, .0f, .0f);
-        camera.up.set(.0f, 1.f, .0f);
-        camera.near = 1.f;
-        camera.far = 300.f;
+        camera = new OrthographicCamera(screenWidth, screenHeight);
+        viewport = new FitViewport(screenWidth, screenHeight, camera);
+        camera.position.set(screenWidth / 2.f, screenHeight / 2.f, .0f);
+        camera.setToOrtho(true, screenWidth, screenHeight);
+        renderer = new ShapeRenderer();
+        engine = new Engine();
+        Entity player = new Entity();
+        player.add(new PlayerTag());
+        player.add(new ColorComponent(Color.WHITE));
+        player.add(new PositionComponent(450.f, 450.f, 100, 100));
+        player.add(new VelocityComponent(300.f));
+        engine.addEntity(player);
+        engine.addSystem(new PlayerInputSystem());
+        engine.addSystem(new RenderSystem(viewport, renderer));
+        Entity robot = new Entity();
+        robot.add(new RobotTag());
+        robot.add(new ColorComponent(Color.GREEN));
+        robot.add(new PositionComponent(300.f, 300.f, 100, 100));
+        robot.add(new VelocityComponent(300.f));
+        robot.add(new FrameComponent(screenWidth, screenHeight));
+        engine.addEntity(robot);
+        engine.addSystem(new RobotSystem());
+        engine.addSystem(new RenderSystem(viewport, renderer));
 
-        modelBatch = new ModelBatch();
-        builders = new Array<>();
-        builders.add(new ModelBuilder());
-        builders.add(new ModelBuilder());
-        init = new Init(builders, camera);
-        Gdx.input.setCursorCatched(true);
     }
 
     @Override
@@ -37,20 +58,17 @@ public class Main extends ApplicationAdapter {
         camera.update(true);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClearColor(.0f, .0f, .0f, 1.f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        modelBatch.begin(camera);
-        init.update(modelBatch, distance);
-        modelBatch.end();
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        final float deltaTime = Gdx.graphics.getDeltaTime();
+        engine.update(deltaTime);
     }
     @Override
     public void resize(int width, int height) {
-      camera.viewportWidth = width;
-      camera.viewportHeight = height;
-      camera.update();
+      viewport.update(width, height, true);
     }
 
     @Override
     public void dispose() {
-       init.dispose();
+        if(renderer != null) renderer.dispose();
     }
 }
