@@ -1,9 +1,11 @@
-#version 330
-out vec4 fragColor;
+#version 330 core
+out vec4 in_color;
 in vec4 v_color;
-uniform float u_time;
+in vec4 v_texcoord0;
+uniform float u_projTime;
 void main() {
-    vec4 color = v_color;
-    color.r *= ((sin(u_time) * 0.35) + 0.5);
-    fragColor = vec4(color.r, 0.0, 0.0, 1.0);
+    vec4 diffuse = v_color;
+    vec4 coord = v_texcoord0;
+    diffuse.r *= (sin(u_projTime) * 0.5) + 0.5;
+    in_color = vec4(diffuse.rgb, v_color.a);
 }

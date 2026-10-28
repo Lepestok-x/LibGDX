@@ -1,16 +1,13 @@
 #version 330
-in vec3 a_position;
 in vec4 a_color;
+in vec4 a_texcoord0;
 out vec4 v_color;
+out vec4 v_texcoord0;
 uniform mat4 u_projViewTrans;
 uniform mat4 u_projViewWorldTrans;
-uniform float u_time;
-
+in vec3 a_position;
 void main() {
     v_color = a_color;
-    vec3 position = a_position;
-    float jelly = position.y + 1.0;
-    float pulse = ((sin(u_time) * 0.5) + 0.5);
-    position.y += pulse * jelly;
-    gl_Position = u_projViewTrans * u_projViewWorldTrans * vec4(position, 1.0);
+    v_texcoord0 = a_texcoord0;
+    gl_Position = u_projViewTrans * u_projViewWorldTrans * vec4(a_position, 1.0);
 }
